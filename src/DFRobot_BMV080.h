@@ -21,56 +21,29 @@ public:
   DFRobot_BMV080(void);
 
   int begin(void);
-  //virtual void BMV080_write_16bit_cb(bmv080_sercom_handle_t sercom_handle, uint16_t header, const uint16_t* payload, uint16_t payload_length) = 0;
-  //virtual uint8_t BMV080_read_16bit_cb(bmv080_sercom_handle_t sercom_handle, uint16_t header, uint16_t* payload, uint16_t payload_length) = 0;
-  //virtual uint8_t BMV080_delay_cb(uint32_t duration_in_ms) = 0;
-  //virtual uint8_t openBmv080(void);
-  //bmv080_handle_t _bmv080_handle_class = NULL;
-  //bmv080_output_t _bmv080Value;
-  //bool openBmv080(void);
-  //bool closeBmv080(void);
-  //char *bmv080ID[13];
-  //bool getBmv080ID(char *id);
+
+  static int8_t BMV080_write_16bit_cb(bmv080_sercom_handle_t, uint16_t, const uint16_t*, uint16_t);
+  static int8_t BMV080_read_16bit_cb(bmv080_sercom_handle_t, uint16_t, uint16_t*, uint16_t);
+  static int8_t BMV080_delay_cb(uint32_t);
+  uint8_t openBmv080(void);
+  bool getBmv080DV(uint16_t &major, uint16_t &minor, uint16_t &patch);
+  bool getBmv080ID(char *id);
+
   bmv080_handle_t _bmv080_handle_class = NULL;
-  TwoWire *_pWire; ///< I2C interface pointer
-  uint8_t _deviceAddr;
-//protected:
-
-/**
- * @fn writeReg
- * @brief 写寄存器函数，设计为虚函数，由派生类实现函数体
- * @param reg  寄存器地址 8bits
- * @param pBuf 要写入数据的存放缓存
- * @param size 要写入数据的长度
- * @return None
- */
-  //virtual void writeReg(uint8_t reg, void* pBuf, size_t size);
-
-/**
- * @fn readReg
- * @brief 读取寄存器函数，设计为虚函数，由派生类实现函数体
- * @param reg  寄存器地址 8bits
- * @param pBuf 要写入数据的存放缓存
- * @param size 要写入数据的长度
- * @return uint8_t类型,表示读寄存器的返回
- * @retval xx xxxxx
- */
-  //virtual uint8_t readReg(uint8_t reg, void* pBuf, size_t size);
+  
+  
 };
 
 class DFRobot_BMV080_I2C:public DFRobot_BMV080{
 public:
-  DFRobot_BMV080_I2C(TwoWire *pWire=&Wire);
+  DFRobot_BMV080_I2C();
   int begin(void);
-  uint8_t openBmv080(void);
-protected:
-  void writeReg(uint8_t reg, const uint16_t* pBuf, size_t size);
-  uint8_t readReg(uint8_t reg, void* pBuf, size_t size);
-
-  static void BMV080_write_16bit_cb(bmv080_sercom_handle_t, uint16_t, const uint16_t*, uint16_t);
-  static uint8_t BMV080_read_16bit_cb(bmv080_sercom_handle_t, uint16_t, uint16_t*, uint16_t);
-  static uint8_t BMV080_delay_cb(uint32_t);
   
+  uint8_t writeReg(uint16_t reg, const uint16_t* pBuf, size_t size);
+  uint8_t readReg(uint16_t reg, uint16_t* pBuf, size_t size);
+
+  TwoWire *_pWire; 
+  uint8_t _deviceAddr;
 };
 
 
