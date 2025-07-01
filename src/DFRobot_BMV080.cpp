@@ -118,13 +118,13 @@ uint8_t DFRobot_BMV080_I2C::readReg(uint16_t reg, uint16_t* pBuf, size_t size)
 
   reg = sftk_byte_swap(reg);
   _pWire->beginTransmission(_deviceAddr);
-  _pWire->write((uint8_t*)&reg, sizeof(reg));  // 写入寄存器地址
+  _pWire->write((uint8_t*)&reg, sizeof(reg));  
   if (_pWire->endTransmission() != 0) {
-      return 0; // 传输失败
+      return 0; 
   }
 
-  size_t totalBytes = size * sizeof(uint16_t); // 需要读取的总字节数
-  _pWire->requestFrom(_deviceAddr, (uint8_t)totalBytes); // 请求数据
+  size_t totalBytes = size * sizeof(uint16_t); 
+  _pWire->requestFrom(_deviceAddr, (uint8_t)totalBytes); 
   uint8_t* pData = reinterpret_cast<uint8_t*>(pBuf);
   for (size_t i = 0; i < totalBytes; ++i) {
       pData[i] = _pWire->read();
@@ -132,8 +132,8 @@ uint8_t DFRobot_BMV080_I2C::readReg(uint16_t reg, uint16_t* pBuf, size_t size)
   for (size_t i = 0; i < size; ++i) {
       pBuf[i] = sftk_byte_swap(pBuf[i]);
   }
-  
-return totalBytes/2;
+
+  return totalBytes/2;
 }
 
 
