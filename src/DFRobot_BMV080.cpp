@@ -303,3 +303,74 @@ uint8_t DFRobot_BMV080_I2C::readReg(uint16_t reg, uint16_t* pBuf, size_t size)
 
   return totalBytes/2;
 }
+
+DFRobot_BMV080_SPI::DFRobot_BMV080_SPI(SPIClass *spi, uint8_t csPin)
+{
+  _pSpi = spi;
+  _csPin = csPin;
+}
+
+int DFRobot_BMV080_SPI::begin(void) 
+{
+  if (_pSpi == NULL) {
+    DBG("_pSpi ERROR!! : null pointer");
+    return ERR_DATA_BUS;
+  }
+  pinMode(_csPin, OUTPUT);
+  _pSpi->begin();
+
+  return ERR_OK; 
+}
+
+uint8_t DFRobot_BMV080_SPI::writeReg(uint16_t reg, const uint16_t* pBuf, size_t size)
+{
+  if (pBuf == NULL) {
+    DBG("pBuf ERROR!! : null pointer");
+    return 1;
+  }
+
+  digitalWrite(_csPin, LOW);
+  _pSpi->beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+  
+  reg = DFRobot_swap16(reg);
+  _pSpi->transfer((uint8_t*)&reg, sizeof(reg));
+  
+  for (size_t i = 0; i < size; i++) {
+    uint16_t data = DFRobot_swap16(pBuf[i]);
+    _pSpi->transfer((uint8_t*)&data, sizeof(data));
+  }
+  
+  _pSpi->endTransaction();
+  digitalWrite(_csPin, HIGH);
+
+  return 0;
+}
+
+uint8_t DFRobot_BMV080_SPI::readReg(uint16_t reg, uint16_t* pBuf, size_t size) 
+{
+  if (_pSpi == NULL) {
+    DBG("_pSpi ERROR!! : null pointer");
+    return 0;
+  }
+
+  if (pBuf == NULL) {
+    DBG("pBuf ERROR!! : null pointer");
+    return 0;
+  }
+
+  digitalWrite(_csPin, LOW);
+  _pSpi->beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+
+  reg = DFRobot_swap16(reg);
+  _pSpi->transfer((uint8_t*)&reg, sizeof(reg));
+
+  for (size_t i = 0; i < size; i++) {
+    uint16_t data = _pSpi->transfer(0x00); // Read data
+    pBuf[i] = DFRobot_swap16(data); // Convert back to host byte order
+  }
+
+  _pSpi->endTransaction();
+  digitalWrite(_csPin, HIGH);
+
+  return size;
+}
