@@ -51,6 +51,8 @@ public:
    */
   DFRobot_BMV080(void);
 
+  virtual uint8_t writeReg(uint16_t reg, const uint16_t* pBuf, size_t size) = 0;
+  virtual uint8_t readReg(uint16_t reg, uint16_t* pBuf, size_t size) = 0;
   /**
    * @fn BMV080_write_16bit_cb
    * @brief Callback function for writing 16-bit data to the BMV080 sensor

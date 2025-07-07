@@ -6,9 +6,9 @@ DFRobot_BMV080::DFRobot_BMV080(void) {
 
 int8_t DFRobot_BMV080::BMV080_write_16bit_cb(bmv080_sercom_handle_t sercom_handle, uint16_t header, const uint16_t* payload, uint16_t payload_length)
 {
-  DFRobot_BMV080_I2C *_pIIC = (DFRobot_BMV080_I2C *)sercom_handle;
+  DFRobot_BMV080 *_pDev = (DFRobot_BMV080 *)sercom_handle;
   header = header << 1;
-  if(_pIIC->writeReg(header, payload, payload_length) != 0){
+  if(_pDev->writeReg(header, payload, payload_length) != 0){
     DBG("writeReg failed");
     return E_BMV080_ERROR_HW_WRITE; 
   }
@@ -18,10 +18,10 @@ int8_t DFRobot_BMV080::BMV080_write_16bit_cb(bmv080_sercom_handle_t sercom_handl
 
 int8_t DFRobot_BMV080::BMV080_read_16bit_cb(bmv080_sercom_handle_t sercom_handle, uint16_t header, uint16_t* payload, uint16_t payload_length)
 {
-  DFRobot_BMV080_I2C *_pIIC = (DFRobot_BMV080_I2C *)sercom_handle;
+  DFRobot_BMV080 *_pDev = (DFRobot_BMV080 *)sercom_handle;
   header = header << 1;
 
-  return _pIIC->readReg(header, payload, payload_length) == payload_length ? E_BMV080_OK : E_BMV080_ERROR_HW_READ;
+  return _pDev->readReg(header, payload, payload_length) == payload_length ? E_BMV080_OK : E_BMV080_ERROR_HW_READ;
 }
 
 int8_t DFRobot_BMV080::BMV080_delay_cb(uint32_t duration_in_ms)
@@ -324,24 +324,23 @@ int DFRobot_BMV080_SPI::begin(void)
 
 uint8_t DFRobot_BMV080_SPI::writeReg(uint16_t reg, const uint16_t* pBuf, size_t size)
 {
-  if (pBuf == NULL) {
+  if (_pSpi == NULL) {
     DBG("pBuf ERROR!! : null pointer");
     return 1;
   }
-
-  digitalWrite(_csPin, LOW);
+  Serial.println("DFRobot_BMV080_SPI::writeReg");
+  uint16_t * _pBuf = (uint16_t *)pBuf;
   _pSpi->beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+  digitalWrite(_csPin, LOW);
+  _pSpi->transfer16(reg);
   
-  reg = DFRobot_swap16(reg);
-  _pSpi->transfer((uint8_t*)&reg, sizeof(reg));
-  
-  for (size_t i = 0; i < size; i++) {
-    uint16_t data = DFRobot_swap16(pBuf[i]);
-    _pSpi->transfer((uint8_t*)&data, sizeof(data));
+  while(size--) {
+    _pSpi->transfer16(*_pBuf);
+    _pBuf ++;
   }
   
-  _pSpi->endTransaction();
   digitalWrite(_csPin, HIGH);
+  _pSpi->endTransaction();
 
   return 0;
 }
@@ -357,20 +356,22 @@ uint8_t DFRobot_BMV080_SPI::readReg(uint16_t reg, uint16_t* pBuf, size_t size)
     DBG("pBuf ERROR!! : null pointer");
     return 0;
   }
+  uint16_t * _pBuf = (uint16_t *)pBuf;
+  size_t count = 0;
 
-  digitalWrite(_csPin, LOW);
   _pSpi->beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+  digitalWrite(_csPin, LOW);
 
-  reg = DFRobot_swap16(reg);
-  _pSpi->transfer((uint8_t*)&reg, sizeof(reg));
+  _pSpi->transfer16(reg);
 
-  for (size_t i = 0; i < size; i++) {
-    uint16_t data = _pSpi->transfer(0x00); // Read data
-    pBuf[i] = DFRobot_swap16(data); // Convert back to host byte order
+  while(size--) {
+    *_pBuf = _pSpi->transfer16(0x00);
+    _pBuf++;
+    count++;
   }
 
+   digitalWrite(_csPin, HIGH);
   _pSpi->endTransaction();
-  digitalWrite(_csPin, HIGH);
-
-  return size;
+ 
+  return count;
 }
