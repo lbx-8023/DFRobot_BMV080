@@ -174,13 +174,11 @@ bool DFRobot_BMV080::setDutyCyclingPeriod(uint16_t duty_cycling_period)
   return (bmv080_status == E_BMV080_OK);
 }
 
-uint16_t DFRobot_BMV080::getDutyCyclingPeriod(void)
+bool DFRobot_BMV080::getDutyCyclingPeriod(uint16_t *duty_cycling_period)
 {
-    uint16_t duty_cycling_period = 0;
+  bmv080_status_code_t bmv080_status = bmv080_get_parameter(_bmv080_handle_class, "duty_cycling_period", (void *)&duty_cycling_period);
 
-    bmv080_status_code_t bmv080_status = bmv080_get_parameter(_bmv080_handle_class, "duty_cycling_period", (void *)&duty_cycling_period);
-
-    return (bmv080_status == E_BMV080_OK ? duty_cycling_period : 0);
+  return (bmv080_status == E_BMV080_OK ? duty_cycling_period : 0);
 }
 
 bool DFRobot_BMV080::setObstructionDetection(bool obstructed)

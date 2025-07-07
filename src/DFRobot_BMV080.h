@@ -222,9 +222,11 @@ public:
   /**
    * @fn getDutyCyclingPeriod
    * @brief Get the current duty cycling period.
-   * @return The current duty cycling period in milliseconds (ms).
+   * @param duty_cycling_period The duty cycling period in milliseconds (ms).
+   * @return 1 successful
+   * @return 0 error
    */
-  uint16_t getDutyCyclingPeriod(void);
+  bool getDutyCyclingPeriod(uint16_t *duty_cycling_period);
 
   /**
    * @fn setObstructionDetection
