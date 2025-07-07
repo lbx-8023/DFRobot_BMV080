@@ -38,7 +38,7 @@ You need to replace the files in the DFRobot_BMV080 library with the files from 
 |Windows | $HOME\Documents\Arduino\libraries\DFRobot_BMV080|
 |Linux| $HOME/Arduino/libraries/DFRobot_BMV080|
 |macOS | $HOME/Documents/Arduino/libraries/DFRobot_BMV080|
-
+ <br>
 Extract the downloaded BMV080 SDK, and then perform the replacement according to the following path.<br>
 
 | Bosch SDK File | DFRobot_BMV080 library |
@@ -47,10 +47,12 @@ Extract the downloaded BMV080 SDK, and then perform the replacement according to
 |api/inc/bmv080_defs.h| src/bmv080_defs.h|
  <br>
 The following files can be replaced according to your needs. Just select the corresponding chips for replacement, or replace all of them.<br>
- <br>
+
 | Bosch SDK File | DFRobot_BMV080 library |
 |---|---|
 |api/lib/xtensa_esp32/xtensa_esp32_elf_gcc/release/lib_bmv080.a | src/esp32/lib_bmv080.a|
 |api/lib/xtensa_esp32/xtensa_esp32_elf_gcc/release/lib_postProcessor.a | src/esp32/lib_postProcessor.a|
+|api/lib/xtensa_esp32s2/xtensa_esp32s3_elf_gcc/release/lib_postProcessor.a | src/esp32s2/lib_postProcessor.a|
+|api/lib/xtensa_esp32s2/xtensa_esp32s3_elf_gcc/release/lib_bmv080.a | src/esp32s2/lib_bmv080.a|
 |api/lib/xtensa_esp32s3/xtensa_esp32s3_elf_gcc/release/lib_postProcessor.a | src/esp32s3/lib_postProcessor.a|
 |api/lib/xtensa_esp32s3/xtensa_esp32s3_elf_gcc/release/lib_bmv080.a | src/esp32s3/lib_bmv080.a|
