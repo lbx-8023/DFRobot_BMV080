@@ -276,7 +276,7 @@ raspberry pi       |      √       |              |             |
 
 ## History
 
-- 2025/07/08 - Version 1.0.0 版本.
+- 2025/07/08 - Version 1.0.0  版本
 
 ## Credits
 
