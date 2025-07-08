@@ -11,7 +11,6 @@ Traditional PM2.5 sensors usually rely on fans or ducts to introduce freely floa
 
   * [Summary](#summary)
   * [Installation](#installation)
-  * [BMV080 Software](#bmv080-software)
   * [Methods](#methods)
   * [BMV080 WIKI](#bmv080-wiki)
   * [Change the SDK](#change-the-sdk)
@@ -21,20 +20,14 @@ Traditional PM2.5 sensors usually rely on fans or ducts to introduce freely floa
 
 ## Summary
 
-DFRobot_BMV080 is a arduino library designed to drive the new Bosch air quality measurement chip BMV080. <br>               
-BMV080 is currently the smallest PM2.5 chip in the world and it uses laser for measurement. <br>                            
-This library provides two communication methods: IIC and SPI, as well as some basic routines.Currently, it only supports the ESP32 platform.<br>
+DFRobot_BMV080 is a arduino library designed to drive the new Bosch air quality measurement chip BMV080.                
+BMV080 is currently the smallest PM2.5 chip in the world and it uses laser for measurement.                          
+This library provides two communication methods: IIC and SPI, as well as some basic routines.Currently, it only supports the ESP32 platform.
 
 ## Installation
 
 To use this library, first download the library file, paste it into the \Arduino\libraries directory, then open the examples folder and run the demo in the folder.
 
-## BMV080 Sodtware
-
-You can refer to the wiki for detailed usage instructions.<br>
-> [!NOTE]
-> Since Bosch currently only provides the pre-compiled library of BMV080, it can only support the platforms that are supported by the Bosch library. The SDK used for this update is from Bosch. You can download and update it from their official website. [Click here to jump to the next page](https://www.bosch-sensortec.com/products/environmental-sensors/particulate-matter-sensor/bmv080/#documents).<br>
-> This library has reserved the SDK of version Bosch bmv080-sdk-v11-1-0. You can directly use it or replace it with the latest SDK of your own choice.The replace method will be visible to you later.
 
 ## Methods
 
@@ -118,12 +111,16 @@ You can refer to the wiki for detailed usage instructions.<br>
 ```
 
 ## BMV080 WIKI
-
+You can refer to the wiki for detailed usage instructions.<br>
 * [点击此处查看中文wiki](https://github.com/lbx-8023/DFRobot_BMV080/wiki/%E4%B8%AD%E6%96%87-WIKI)<br>
 * [Click here to view the English WIKI](https://github.com/lbx-8023/DFRobot_BMV080/wiki/English-WIKI)<br>
 
 ## Change the SDK
 If you want to upgrade the Bosch BMV080 SDK, you can follow the steps below.<br>
+
+> [!NOTE]
+> Since Bosch currently only provides the pre-compiled library of BMV080, it can only support the platforms that are supported by the Bosch library. The SDK used for this update is from Bosch. You can download and update it from their official website. [Click here to jump to the next page](https://www.bosch-sensortec.com/products/environmental-sensors/particulate-matter-sensor/bmv080/#documents).<br>
+> This library has reserved the SDK of version Bosch bmv080-sdk-v11-1-0. You can directly use it or replace it with the latest SDK of your own choice.The replace method will be visible to you later.
 
 ### Install the SDK
 You can download the SDK from Bosch official website. [Click here to jump to the next page](https://www.bosch-sensortec.com/products/environmental-sensors/particulate-matter-sensor/bmv080/#documents).<br>
@@ -167,6 +164,7 @@ ESP32              |      √       |              |             |
 micro:bit          |              |       √      |             | 
 raspberry pi       |      √       |              |             |     
 <br>
+
 ## History
 
 - 2025/07/08 - Version 1.0.0 released.
