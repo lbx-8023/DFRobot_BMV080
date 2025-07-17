@@ -122,6 +122,7 @@ bool DFRobot_BMV080::getBmv080Data(float *PM1, float *PM2_5, float *PM10)
     *PM10 = _bmv080Data.pm10_mass_concentration;
   }
 
+  
   return _bmv080DataOK;
 }
 
