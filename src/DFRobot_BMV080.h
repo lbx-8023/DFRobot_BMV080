@@ -25,23 +25,16 @@
 
 #define DFRobot_BMV080_I2C_ADDR 0x57
 
+#define DFRobot_BMV080_MODE_CONTINUOUS  0
+#define DFRobot_BMV080_MODE_DUTY_CYCLE  1
+
 class DFRobot_BMV080 {
 public:
-  #define ERR_OK             0      ///< 无错误
-  #define ERR_DATA_BUS      -1      ///< 数据总线错误
-  #define ERR_DATA_READ     -2      ///< 数据总线错误
-  #define ERR_IC_VERSION    -3     ///< 芯片版本不匹配
-  /**
-   * @enum eBmv080Mode_t
-   * @brief BMV080 modes
-   * @n DFRobot_BMV080_MODE_CONTINUOUS: Continuous mode
-   * @n DFRobot_BMV080_MODE_DUTY_CYCLE: Duty cycle mode
-   * @n The BMV080 supports two modes of operation: continuous and duty cycle.
-   */
-  typedef enum{
-    DFRobot_BMV080_MODE_CONTINUOUS = 0,
-    DFRobot_BMV080_MODE_DUTY_CYCLE = 1
-  }eBmv080Mode_t;
+  #define ERR_OK            0      ///< 无错误
+  #define ERR_DATA_BUS      1      ///< 数据总线错误
+  #define ERR_DATA_READ     2      ///< 数据总线错误
+  #define ERR_IC_VERSION    3     ///< 芯片版本不匹配
+
 public: 
 
   /**
@@ -307,7 +300,7 @@ public:
    * @param Wire: Pointer to the TwoWire object for I2C communication
    * @note This constructor initializes the I2C communication interface for the BMV080 sensor
    */
-  DFRobot_BMV080_I2C(TwoWire *Wire);
+  DFRobot_BMV080_I2C(TwoWire *Wire, uint8_t deviceAddr = DFRobot_BMV080_I2C_ADDR);
 
   /**
    * @fn begin

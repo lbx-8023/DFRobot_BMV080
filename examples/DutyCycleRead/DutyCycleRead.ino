@@ -4,7 +4,9 @@
 
 SET_LOOP_TASK_STACK_SIZE(60 * 1024); // 60KB
 
-DFRobot_BMV080_I2C sensor(&Wire, 0x57);
+DFRobot_BMV080_I2C sensor(&Wire);
+
+#define DUTY_CYCLE_PERIOD 20 // Duty cycle period in seconds
 
 
 void setup() {
@@ -25,7 +27,9 @@ void setup() {
   Serial.println("open successful");
   sensor.getBmv080ID(id);
   Serial.println("Chip ID is:" + String(id));
-  if(sensor.setBmv080Mode(DFRobot_BMV080_MODE_CONTINUOUS))
+  
+  sensor.setDutyCyclingPeriod(DUTY_CYCLE_PERIOD);
+  if(sensor.setBmv080Mode(DFRobot_BMV080_MODE_DUTY_CYCLE))
     Serial.println("Mode setting successful");
 }
 

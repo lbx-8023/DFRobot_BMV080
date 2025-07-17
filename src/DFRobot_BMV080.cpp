@@ -98,7 +98,6 @@ bool DFRobot_BMV080::get_bmv080Data(bmv080_output_t bmv080_output)
   _bmv080Data = bmv080_output;
   _bmv080DataOK = true;
 
-  
   return E_BMV080_OK;
 }
 
@@ -114,7 +113,6 @@ bool DFRobot_BMV080::getBmv080Data(float *PM1, float *PM2_5, float *PM10)
     bmv080_serve_interrupt(_bmv080_handle_class, (bmv080_callback_data_ready_t)getBmv080Data_cb, (void *)this);
 
   if(bmv080_status != E_BMV080_OK) {
-    DBG("bmv080_serve_interrupt failed, status is:" + String(bmv080_status));
     return false;
   }
   if(_bmv080DataOK){
@@ -123,7 +121,6 @@ bool DFRobot_BMV080::getBmv080Data(float *PM1, float *PM2_5, float *PM10)
     *PM10 = _bmv080Data.pm10_mass_concentration;
   }
 
-  
   return _bmv080DataOK;
 }
 
@@ -235,10 +232,10 @@ uint8_t DFRobot_BMV080::getMeasurementAlgorithm(void)
   return (bmv080_status == E_BMV080_OK ? (uint8_t)measurement_algorithm : 0);
 }
 
-DFRobot_BMV080_I2C::DFRobot_BMV080_I2C(TwoWire * Wire)
+DFRobot_BMV080_I2C::DFRobot_BMV080_I2C(TwoWire * Wire, uint8_t deviceAddr)
 {
   _pWire = Wire;
-  _deviceAddr = DFRobot_BMV080_I2C_ADDR;
+  _deviceAddr = deviceAddr;
 }
 
 int DFRobot_BMV080_I2C::begin(void) 
@@ -285,42 +282,42 @@ uint8_t DFRobot_BMV080_I2C::writeReg(uint16_t reg, const uint16_t* pBuf, size_t 
 
 uint8_t DFRobot_BMV080_I2C::readReg(uint16_t reg, uint16_t* pBuf, size_t size)
 {
-  if (_pWire == NULL) {
-      DBG("_pWire ERROR!! : null pointer");
-      return 0;
-  }
-
-  reg = DFRobot_swap16(reg); // Ensure reg is in big-endian format
-  _pWire->beginTransmission(_deviceAddr);
-  _pWire->write((uint8_t*)&reg, sizeof(reg));  
-  if (_pWire->endTransmission() != 0) {
-      return 0; 
-  }
-
-  size_t totalBytes = size * sizeof(uint16_t); 
-  size_t receivedBytes = _pWire->requestFrom(_deviceAddr, (uint8_t)totalBytes); 
-
-  if(receivedBytes != totalBytes) {
-    DBG("I2C requestFrom failed: expected " + String(totalBytes) + " bytes, got " + String(receivedBytes));
+  if (_pWire == NULL || pBuf == NULL) {
+    DBG("Invalid pointer: _pWire or pBuf is NULL");
     return 0;
   }
 
-  uint8_t* pData = reinterpret_cast<uint8_t*>(pBuf);
-  for (size_t i = 0; i < totalBytes; ++i) {
-    if(_pWire->available()) {
-        pData[i] = _pWire->read();
-      } else {
-        DBG("I2C read failed: no data available");
-        return 0;
-      }
+  reg = DFRobot_swap16(reg);
+  _pWire->beginTransmission(_deviceAddr);
+  _pWire->write((uint8_t*)&reg, sizeof(reg));
+  if (_pWire->endTransmission() != 0) {
+    DBG("Failed to send register address");
+    return 0;
   }
 
-  for (size_t i = 0; i < size; ++i) {
-      pBuf[i] = DFRobot_swap16(pBuf[i]); // Convert back to host byte order
+  size_t totalBytes = size * sizeof(uint16_t);
+  uint8_t buffer[32];
+  uint16_t* pWord = pBuf;
+
+  while (totalBytes > 0) {
+    uint8_t chunkSize = (totalBytes > sizeof(buffer)) ? sizeof(buffer) : totalBytes;
+
+    _pWire->requestFrom(_deviceAddr, chunkSize);
+
+    for (uint8_t i = 0; i < chunkSize; i++) {
+      buffer[i] = _pWire->read();
+    }
+
+    for (uint8_t i = 0; i < chunkSize; i += sizeof(uint16_t)) {
+      *pWord = (buffer[i] << 8) | buffer[i + 1];
+      pWord++;
+    }
+    totalBytes -= chunkSize;
   }
 
-  return totalBytes/2;
+  return size; 
 }
+
 
 DFRobot_BMV080_SPI::DFRobot_BMV080_SPI(SPIClass *spi, uint8_t csPin)
 {
