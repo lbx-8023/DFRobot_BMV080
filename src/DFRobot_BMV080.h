@@ -23,7 +23,7 @@
 
 #define DBG(...) {Serial.print("[");Serial.print(__FUNCTION__); Serial.print("(): "); Serial.print(__LINE__); Serial.print(" ] "); Serial.println(__VA_ARGS__);}
 
-#define DFRobot_BMV080_I2C_ADDR 0x55
+#define DFRobot_BMV080_I2C_ADDR 0x57
 
 class DFRobot_BMV080 {
 public:
@@ -246,6 +246,14 @@ public:
   bool getObstructionDetection(void);
 
   /**
+   * @fn ifObstructed
+   * @brief Check whether the sensor receiver is blocked.
+   * @return 1 Obstructed
+   * @return 0 not obstructed
+   */
+  bool ifObstructed(void);
+
+    /**
    * @fn setDoVibrationFiltering
    * @brief Enable or disable the Do Vibration Filtering feature.
    * @param do_vibration_filtering 1 to enable, 0 to disable.

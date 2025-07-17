@@ -38,8 +38,7 @@ uint32_t DFRobot_BMV080::BMV080_delay_cycling_cb(void)
 
 void DFRobot_BMV080::getBmv080Data_cb(bmv080_output_t bmv080_output, void *cb_parameters)
 {
-  *(bmv080_output_t*)cb_parameters = bmv080_output;
-  //((DFRobot_BMV080 *)cb_parameters)->get_bmv080Data(bmv080_output);
+  ((DFRobot_BMV080 *)cb_parameters)->get_bmv080Data(bmv080_output);
 }
 
 uint8_t DFRobot_BMV080::openBmv080(void)
@@ -98,7 +97,7 @@ bool DFRobot_BMV080::get_bmv080Data(bmv080_output_t bmv080_output)
 {
   _bmv080Data = bmv080_output;
   _bmv080DataOK = true;
-  DBG("I am here get_bmv080Data");
+
   return E_BMV080_OK;
 }
 
@@ -107,17 +106,20 @@ bool DFRobot_BMV080::getBmv080Data(float *PM1, float *PM2_5, float *PM10)
   _bmv080DataOK = false;
 
   if(_bmv080_handle_class == NULL) {
-    Serial.println("bmv080_handle_class is null 1");
+    DBG("bmv080_handle_class is null 1");
     return false;
   }
   bmv080_status_code_t bmv080_status =
-    bmv080_serve_interrupt(_bmv080_handle_class, (bmv080_callback_data_ready_t)getBmv080Data_cb, &_bmv080Data);
+    bmv080_serve_interrupt(_bmv080_handle_class, (bmv080_callback_data_ready_t)getBmv080Data_cb, (void *)this);
 
-  if(bmv080_status == E_BMV080_OK) {
-    _bmv080DataOK = true;
-  } else {
+  if(bmv080_status != E_BMV080_OK) {
     DBG("bmv080_serve_interrupt failed, status is:" + String(bmv080_status));
     return false;
+  }
+  if(_bmv080DataOK){
+    *PM1 = _bmv080Data.pm1_mass_concentration;
+    *PM2_5 = _bmv080Data.pm2_5_mass_concentration;
+    *PM10 = _bmv080Data.pm10_mass_concentration;
   }
 
   return _bmv080DataOK;
@@ -196,6 +198,10 @@ bool DFRobot_BMV080::getObstructionDetection(void)
   return bmv080_status == E_BMV080_OK ? obstructed : false;
 }
 
+bool DFRobot_BMV080::ifObstructed(void)
+{
+  return _bmv080Data.is_obstructed;
+}
 bool DFRobot_BMV080::setDoVibrationFiltering(bool do_vibration_filtering)
 {
   bmv080_status_code_t bmv080_status =
@@ -290,11 +296,23 @@ uint8_t DFRobot_BMV080_I2C::readReg(uint16_t reg, uint16_t* pBuf, size_t size)
   }
 
   size_t totalBytes = size * sizeof(uint16_t); 
-  _pWire->requestFrom(_deviceAddr, (uint8_t)totalBytes); 
+  size_t receivedBytes = _pWire->requestFrom(_deviceAddr, (uint8_t)totalBytes); 
+
+  if(receivedBytes != totalBytes) {
+    DBG("I2C requestFrom failed: expected " + String(totalBytes) + " bytes, got " + String(receivedBytes));
+    return 0;
+  }
+
   uint8_t* pData = reinterpret_cast<uint8_t*>(pBuf);
   for (size_t i = 0; i < totalBytes; ++i) {
-      pData[i] = _pWire->read();
+    if(_pWire->available()) {
+        pData[i] = _pWire->read();
+      } else {
+        DBG("I2C read failed: no data available");
+        return 0;
+      }
   }
+
   for (size_t i = 0; i < size; ++i) {
       pBuf[i] = DFRobot_swap16(pBuf[i]); // Convert back to host byte order
   }
