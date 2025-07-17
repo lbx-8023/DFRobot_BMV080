@@ -98,6 +98,7 @@ bool DFRobot_BMV080::get_bmv080Data(bmv080_output_t bmv080_output)
   _bmv080Data = bmv080_output;
   _bmv080DataOK = true;
 
+  
   return E_BMV080_OK;
 }
 
