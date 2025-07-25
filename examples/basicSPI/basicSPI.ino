@@ -11,25 +11,22 @@ void setup() {
   // put your setup code here, to run once:
   char id[13];
   Serial.begin(115200);
-  //while(!Serial) delay(100);
-  
+  while(!Serial) delay(100);
+
   while(sensor.begin() != 0){
-    Serial.println("初始化芯片失败，请确认芯片连接是否正确");
+    Serial.println("Initialization of the sensor failed! Please confirm if the sensor chip connection is correct.");
     delay(1000);
   }
-  
-  Serial.println("初始化芯片成功");
+  Serial.println("Initialization of the sensor was successful.");
   while(sensor.openBmv080()){
-    Serial.println("open失败");
+    Serial.println("open failed");
     delay(1000);
   }
-  Serial.println("open成功");
+  Serial.println("open successful");
   sensor.getBmv080ID(id);
-  Serial.println("id is:" + String(id));
-  delay(100);
+  Serial.println("Chip ID is:" + String(id));
   if(sensor.setBmv080Mode(DFRobot_BMV080_MODE_CONTINUOUS))
     Serial.println("Mode setting successful");
-  // if(sensor.setBmv080Mode(0))
     
 }
 float pm1,pm2_5,pm10;
