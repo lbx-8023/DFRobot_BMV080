@@ -12,7 +12,7 @@ void setup() {
   char id[13];
   Serial.begin(115200);
   //while(!Serial) delay(100);
-
+  
   while(sensor.begin() != 0){
     Serial.println("初始化芯片失败，请确认芯片连接是否正确");
     delay(1000);
@@ -21,17 +21,28 @@ void setup() {
   Serial.println("初始化芯片成功");
   while(sensor.openBmv080()){
     Serial.println("open失败");
-    delay(2000);
+    delay(1000);
   }
   Serial.println("open成功");
   sensor.getBmv080ID(id);
   Serial.println("id is:" + String(id));
   delay(100);
+  if(sensor.setBmv080Mode(DFRobot_BMV080_MODE_CONTINUOUS))
+    Serial.println("Mode setting successful");
   // if(sensor.setBmv080Mode(0))
     
 }
-
+float pm1,pm2_5,pm10;
 void loop() {
   // put your main code here, to run repeatedly:
+  if(sensor.getBmv080Data(&pm1,&pm2_5,&pm10)){
+    Serial.print("pm1:" + String(pm1) + "  " + "pm2.5:" + String(pm2_5) + "  " + "pm10:" + String(pm10));
 
+    if(sensor.ifObstructed()){
+      Serial.print("  Obstructed The data may be invalid.");
+    }
+
+    Serial.println();
+  }
+  delay(100);
 }

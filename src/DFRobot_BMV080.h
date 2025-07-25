@@ -37,6 +37,7 @@ public:
 
 public: 
 
+  bool devClass = true; // true for I2C, false for SPI
   /**
    * @fn DFRobot_BMV080
    * @brief Constructor of DFRobot_BMV080 class

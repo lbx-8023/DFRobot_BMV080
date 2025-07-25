@@ -6,7 +6,6 @@ SET_LOOP_TASK_STACK_SIZE(60 * 1024); // 60KB
 
 DFRobot_BMV080_I2C sensor(&Wire, 0x57);
 
-
 void setup() {
   // put your setup code here, to run once:
   char id[13];
