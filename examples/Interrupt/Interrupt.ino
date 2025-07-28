@@ -1,18 +1,41 @@
+/*!
+ * @file interrupt.ino
+ * @brief This routine uses the IIC interface and adopts the interrupt mode to obtain data. 
+ * @n When the sensor data is ready, an interrupt signal will be generated.
+ * @n The obtained data include the current levels of PM1, PM2.5 and PM10 in the air.
+ * @n The demo supports FireBeetle-ESP32-E, FireBeetle-ESP32-S3, and FireBeetle-ESP8266.
+ * @details Experimental phenomenon: The read data will be output in the serial port monitor.
+ * 
+ * @copyright Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
+ * @license The MIT License (MIT)
+ * @author [Ouki](ouki.wang@dfrobot.com)
+ * @version V1.0
+ * @date 2025-07-28
+ * @url https://github.com/DFRobot/DFRobot_BMV080
+ */
 
 #include "DFRobot_BMV080.h"
 #include <string>
 
-SET_LOOP_TASK_STACK_SIZE(60 * 1024); // 60KB
+SET_LOOP_TASK_STACK_SIZE(60 * 1024); // Set the stack size of the loop task to 60KB
 
-DFRobot_BMV080_I2C sensor(&Wire, 0x57);
-#define IRQ_Pin 14
+//You can choose to use either the IIC interface or the SPI interface. The default is IIC. 
+//If you want to use SPI, simply remove the following comments.
+DFRobot_BMV080_I2C sensor(&Wire, 0x57); // Create an instance of the DFRobot_BMV080_I2C class with the I2C address 0x57.
 
-bool dataFlag = false;
+//#define SPI_CS_PIN 17
+//DFRobot_BMV080_SPI sensor(&SPI,SPI_CS_PIN); // Create an instance of the DFRobot_BMV080_SPI class with the SPI CS pin.
+
+#define IRQ_Pin 14 // Define the interrupt pin.
+
+bool dataFlag = false; // Create a flag to indicate whether new data is available.
+
 void setup() {
   char id[13];
   Serial.begin(115200);
   while(!Serial) delay(100);
 
+  Serial.println("The interrupt routine.");
   while(sensor.begin() != 0){
     Serial.println("Initialization of the sensor failed! Please confirm if the sensor chip connection is correct.");
     delay(1000);

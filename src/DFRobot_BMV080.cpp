@@ -48,7 +48,7 @@ uint8_t DFRobot_BMV080::openBmv080(void)
   bmv080_status_code_t bmv080_status = bmv080_open(
         &_bmv080_handle_class, (bmv080_sercom_handle_t)this, (bmv080_callback_read_t)BMV080_read_16bit_cb,
         (bmv080_callback_write_t)BMV080_write_16bit_cb, (bmv080_callback_delay_t)BMV080_delay_cb);
-  DBG("status is:" + String(bmv080_status));
+  //DBG("status is:" + String(bmv080_status));
 
   return bmv080_status;
 }
@@ -339,7 +339,7 @@ int DFRobot_BMV080_SPI::begin(void)
   }
   pinMode(_csPin, OUTPUT);
   _pSpi->begin();
-  spiSettings = SPISettings(100000, MSBFIRST, SPI_MODE0);
+  spiSettings = SPISettings(1000000, MSBFIRST, SPI_MODE0);
   return ERR_OK; 
 }
 
