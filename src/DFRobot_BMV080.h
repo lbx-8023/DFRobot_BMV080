@@ -25,8 +25,8 @@
 
 #define DFRobot_BMV080_I2C_ADDR 0x57
 
-#define DFRobot_BMV080_MODE_CONTINUOUS  0
-#define DFRobot_BMV080_MODE_DUTY_CYCLE  1
+#define DFRobot_BMV080_MODE_CONTINUOUS  0 ///< Continuous mode, sensor takes measurements continuously
+#define DFRobot_BMV080_MODE_DUTY_CYCLE  1 ///< Duty cycle mode, sensor takes measurements at specified intervals
 
 class DFRobot_BMV080 {
 public:

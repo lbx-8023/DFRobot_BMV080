@@ -27,30 +27,35 @@ DFRobot_BMV080_I2C sensor(&Wire, 0x57); // Create an instance of the DFRobot_BMV
 
 
 void setup() {
-  char id[13];
+  char id[13]; // Variable to store the chip ID of the BMV080 sensor.
   Serial.begin(115200);
-  while(!Serial) delay(100);
-
+  while(!Serial) delay(100); // Wait for the serial port to be ready.
+  // Initialize the sensor.
   Serial.println("The Continuous reading routine.");
   while(sensor.begin() != 0){
     Serial.println("Initialization of the sensor failed! Please confirm if the sensor chip connection is correct.");
     delay(1000);
   }
   Serial.println("Initialization of the sensor was successful.");
+  // Open the BMV080 sensor.
   while(sensor.openBmv080()){
     Serial.println("open failed");
     delay(1000);
   }
   Serial.println("open successful");
-  sensor.getBmv080ID(id);
+  // Get the chip ID of the BMV080 sensor.
+  sensor.getBmv080ID(id); 
   Serial.println("Chip ID is:" + String(id));
-  if(sensor.setBmv080Mode(DFRobot_BMV080_MODE_CONTINUOUS))
+  // Set the measurement mode to continuous mode.
+  if(sensor.setBmv080Mode(DFRobot_BMV080_MODE_CONTINUOUS)) 
     Serial.println("Mode setting successful");
 }
 
+// define the variables to store the PM data.
 float pm1,pm2_5,pm10;
 
 void loop() {
+  // Read the PM data from the sensor.
   if(sensor.getBmv080Data(&pm1,&pm2_5,&pm10)){
     Serial.print("pm1:" + String(pm1) + "  " + "pm2.5:" + String(pm2_5) + "  " + "pm10:" + String(pm10));
 

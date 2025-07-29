@@ -31,32 +31,37 @@ DFRobot_BMV080_I2C sensor(&Wire, 0x57); // Create an instance of the DFRobot_BMV
 bool dataFlag = false; // Create a flag to indicate whether new data is available.
 
 void setup() {
-  char id[13];
+  char id[13]; // Variable to store the chip ID of the BMV080 sensor.
   Serial.begin(115200);
-  while(!Serial) delay(100);
-
+  while(!Serial) delay(100); // Wait for the serial port to be ready.
+  // Initialize the sensor.
   Serial.println("The interrupt routine.");
   while(sensor.begin() != 0){
     Serial.println("Initialization of the sensor failed! Please confirm if the sensor chip connection is correct.");
     delay(1000);
   }
   Serial.println("Initialization of the sensor was successful.");
+  // Open the BMV080 sensor.
   while(sensor.openBmv080()){
     Serial.println("open failed");
     delay(1000);
   }
   Serial.println("open successful");
+  // Get the chip ID of the BMV080 sensor.
   sensor.getBmv080ID(id);
   Serial.println("Chip ID is:" + String(id));
+  // Set the measurement mode to continuous mode.
   if(sensor.setBmv080Mode(DFRobot_BMV080_MODE_CONTINUOUS))
     Serial.println("Mode setting successful");
-
+  // Set the interrupt pin.
   setInterruptPin();
 }
 
+// define the variables to store the PM data.
 float pm1,pm2_5,pm10;
 void loop() {
-
+  // Check if new data is available.
+  // If the dataFlag is true, it means new data is available.
   if(dataFlag){
     dataFlag = false;
     if(sensor.getBmv080Data(&pm1,&pm2_5,&pm10)){
@@ -72,6 +77,8 @@ void loop() {
   delay(100);
 }
 
+// Function to set the interrupt pin.
+// This function checks if the interrupt pin is supported on the board and sets it up.
 void setInterruptPin(void){
   if(digitalPinToInterrupt(IRQ_Pin) == -1){
     Serial.println("Interrupt pin not supported on this board.");
@@ -82,6 +89,7 @@ void setInterruptPin(void){
   attachInterrupt(digitalPinToInterrupt(IRQ_Pin), IRQ_handler, FALLING);
 }
 
+// Interrupt handler function
 void IRQ_handler(void)
 {
   dataFlag = true;
